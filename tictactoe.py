@@ -45,4 +45,103 @@ def draw_figures():
                                  (col * SQUARE_SIZE + SPACE, row * SQUARE_SIZE + SQUARE_SIZE - SPACE),
                                  (col * SQUARE_SIZE + SQUARE_SIZE - SPACE, row * SQUARE_SIZE + SPACE),
                                  CROSS_WIDTH)       
-                   
+       
+def check_winner(player):
+    for row in range(BOARD_ROWS):
+        if all(board[row][col] == player for col in range(BOARD_COLS)):
+            return True
+    for col in range(BOARD_COLS):
+        if all(board[row][col] == player for row in range(BOARD_ROWS)):
+            return True
+    if all(board[i][i] == player for i in range(BOARD_ROWS)) or \
+       all(board[i][BOARD_ROWS - 1 - i] == player for i in range(BOARD_ROWS)):
+           return True
+    return False
+
+def show_message(message):
+    screen.fill(BG_COLOUR)
+    text = font.render(message, True, TEXT_COLOUR)            
+    text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+    screen.blit(text, text_rect)
+    pygame.display.update()
+    pygame.time.delay(3000)
+
+def restart():
+    global board
+    board = [["" for _ in range(BOARD_COLS)] for _ in range(BOARD_ROWS)]  
+    screen.fill(BG_COLOUR)  
+    draw_lines()
+
+def is_full():
+    return all(cell != " " for row in board for cell in row )    
+
+def available_moves():
+    return[(r,c) for r in range(BOARD_ROWS) for c in range(BOARD_COLS) if board [r][c] == " " ]
+
+def smart_move():
+    for r,c in available_moves():
+        board [r][c] = 'O'
+        if check_winner('O'):
+            return True
+        board[r][c] == " "
+        
+    for r,c in available_moves():
+        board [r][c] = 'X'
+        if check_winner('X'):
+            board[r][c] = 'O'
+            return True
+        board[r][c] == " "    
+    if board[1][1] == " ":
+        board[1][1] = 'O'
+        return True
+    for r,c in [(0,0), (0,2), (2,0), (2,2)] :
+        if board[r][c] == " ":
+            board[r][c] = 'O'
+            return True
+        return False
+
+def computer_move():
+    difficulty = 0.7
+    if random.random() < difficulty:
+        if smart_move():
+            return
+    r, c = random.choice(available_moves())    
+    board[r][c] = 'O'
+    
+draw_lines()
+player = 'X' 
+
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        if player == 'X' and event.type == pygame.MOUSEBUTTONDOWN:
+            mouseX = event.pos[0]
+            mouseY = event.pos[1]
+            clicked_row = mouseY // SQUARE_SIZE
+            clicked_col = mouseX // SQUARE_SIZE
+            if board[clicked_row][clicked_col] == " ":   
+                board[clicked_row][clicked_col] = player
+                if check_winner(player):
+                   show_message(f"Player {player} wins!")
+                   restart()
+                elif is_full():
+                    show_message("It's a draw!")
+                    restart()
+                player = 'O'    
+
+    if player == 'O':
+        pygame.time.delay(500)
+        computer_move()
+        if check_winner('O'):
+            show_message("Computer wins!")
+            restart()
+        elif is_full():
+            show_message("Is is a draw!")
+            restart()
+        player = 'X'   
+    
+    draw_figures()
+    pygame.display.update()
+         
