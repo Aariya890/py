@@ -1,40 +1,46 @@
 import random
+import pygame
 
-class Flashcard():
-    def __init__(self, question, answer):
-        self.question = question
-        self.answer = answer
-        
-class FlashcardDeck:
-    def __init__(self):
-        self.cards = []
-    def add_card(self, question, answer) :
-        self.cards.append(Flashcard(question, answer))
-    def shuffle(self):
-        random.shuffle(self.cards)     
-    def quiz(self):
-        score = 0
-        for card in self.cards:
-            print(f"Question: {card.question}")
-            user_answer = input("Enter your answer: ")
-            if user_answer.strip().lower() == card.answer.strip().lower():
-                print("Correct!\n")
-                score += 1
-            else:
-                print(f"Wrong! The answer is {card.answer}\n.")    
-        print(f"Quiz finished! Your score: {score}/{len(self.cards)}")        
+
+class Button():
+    def __init__(self, x, y, pos, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.pos = pos
     
-def main():
-    deck = FlashcardDeck()
-    print("Enter your flashcards(or 'done' to finish): ")  
-    while True:
-        q = input("Question: ") 
-        if q.lower() == 'done' :
-            break
-        a = input("Answer: ")
-        deck.add_card(q, a)
-    deck.shuffle()    
-    deck.quiz()
+    def clicked(self, pos):
+        self.pos = pygame.pos.get_pos()
+        if self.pos[0] > self.x and self.pos[0] < self.x + self.width:
+            if self.pos[1] > self.y and self.pos[1] < self.y + self.height:
+                return True
+        return False
 
-if __name__ == "__main__":
-    main()    
+class Rps_game():
+    def __init__(self):
+        pygame.init()   
+        
+        self.screen = pygame.display.set_mode((960, 640))
+        pygame.display.set_caption("Rock Paper Scissors")
+        
+        self.bg = pygame.image.load("background.jpg")
+        self.r_btn = pygame.image.load("r_button.png").convert_alpha()
+        self.p_btn = pygame.image.load("p_button.png").convert_alpha()
+        self.s_btn = pygame.image.load("s_button.png").convert_alpha()
+        
+        self.choose_rock = pygame.image.load("rock.png").convert_alpha()
+        self.choose_paper = pygame.image.load("paper.png").convert_alpha()
+        self.choose_scissors = pygame.image.load("scissors.png").convert_alpha()
+        
+        self.screen.blit(self.bg, (0, 0))
+        self.screen.blit(self.r_btn, (20, 500))
+        self.screen.blit(self.p_btn, (330, 500))
+        self.screen.blit(self.s_btn, (640, 500))
+        
+        self.rock_btn = Button(30, 520, (30, 520), 300, 140)
+        self.paper_btn = Button(340, 520, (340, 520), 300, 140)
+        self.scissors_btn = Button(640, 520, (640, 520), 300, 140)
+        
+        self.font = pygame.font.Font(('Splatch.ttf', 90))
+        self.text = self.font.render(f" ", True, (255, 255, 255))
