@@ -1,0 +1,44 @@
+import tkinter as tk
+
+class CalculatorApp():
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Colourful Calculator")
+        self.expression = " "
+        
+        self.root.configure(bg="#2c3e50")
+        
+        self.entry = tk.Entry(
+            root, font=("Arial", 24, "bold"), borderwidth=5, relief="ridge",
+            justify="right", bg = "#ecf0f1", fg = "black", insertbackground="black"
+            )
+        self.entry.grid(row=0, column=0, columnspan=4, padx=10, pady=15, sticky="nsew")
+        
+        buttons = [
+            ('7', 1, 0, "#1abc9c"), ('8', 1, 1, "#1abc9c"), ('9', 1, 2, "#1abc9c"), ('/', 1, 3, "#e67e22"),
+            ('4', 2, 0, "#3498db"), ('5', 2, 1, "#3498db"), ('6', 1, 2, "#3498db"), ('*', 2, 3, "#e67e22"),
+            ('1', 3, 0, "#f39c12"), ('2', 3, 1, "#f39c12"), ('3', 1, 2, "#f39c12"), ('-', 3, 3, "#e67e22"),
+            ('0', 4, 0, "#9b59b6"), ('2', 4, 1, "#9b59b6"), ('C', 1, 2, "#e74c3c"), ('+', 4, 3, "#e67e22"),
+            ('⌫', 5, 0, "#95a5a6"), ('=', 5, 1, "#2ecc71", 3)
+        ]
+        
+        for (text, row, col, color,*span) in buttons:
+            colspan = span[0] if span else 1
+            btn = tk.button(
+                root, text=text, font=("Arial", 18, "bold")
+                command = lambda t=text: self.on_button_click(t),
+                bg=color, fg="white", activebackground = "#34495e", activeforegroung = "white",
+                relief = "raised", bd=4
+            )          
+            btn.grid(row=row, column=col, columnspan=colspan, sticky="nsew", padx=3, pady=3, ipadx=5, ipady=10)
+        for i in range(6):
+            root.grid_rowconfigure(i, weight=1)
+        for i in range(4):
+            root.grid_columnconfigure(i, weight=1)    
+            
+        root.bind("<Key>", self.key_handler)   
+        
+    def on_button_click(self,char):
+        if char == "C":
+            self.expression = ""
+            self.
