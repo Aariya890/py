@@ -41,4 +41,40 @@ class CalculatorApp():
     def on_button_click(self,char):
         if char == "C":
             self.expression = ""
-            self.
+            self.entry.delete(0, tk.END)
+        elif char == "⌫":
+            self.expression = self.expression[:-1]
+            self.entry.delete(0, tk.END)
+            self.entry.insert(tk.END, self.expression)
+        elif char == "=":
+            try:
+                result = str(eval(self.expression))
+                self.entry.delete(0, tk.END)
+                self.entry.insert(tk.END, result)
+                self.expression = result
+            except Exception:
+                self.entry.delete(0, tk.END)
+                self.entry.insert(tk.END, "Error")
+                self.expression = ""
+        else:
+            if char in "+-*/" and (not self.expression or self.expression[-1] in "+-*/") :
+                return
+            self.expression += str(char)
+            self.entry.delete(0, tk.END)
+            self.entry.insert(tk.END, self.expression)
+            
+    def key_handler(self, event):
+        char = event.char
+        if char.isdigit() or char in "+-*/.":
+            self.on_button_click(char)
+        elif event.keysym == "Return":
+            self.on_button_click("=")
+        elif event.keysym == "Backspace":
+            self.on_button_click("⌫")
+        elif event.keysym == "Escape":
+            self.on_button_click("C")   
+            
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = CalculatorApp(root)     
+    root.mainloop()            
